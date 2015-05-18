@@ -1,0 +1,42 @@
+# Produced by Chef -- changes will be overwritten
+
+# I am server # {{ zookeeper_myid }}
+
+{% for node in zookeeper_nodes %}
+server.{{node.id}}:{{ node.addr }}:{{ zookeeper_leader_port }}:{{ zookeeper_election_port }}
+{% endfor %}
+
+# The number of milliseconds of each tick (default 2000)
+tickTime= {{ zookeeper_tick_time }}
+
+# Time, in ticks, to allow followers to connect and sync to a leader. 
+initLimit= {{ zookeeper_initial_timeout_ticks }}
+
+# Time, in ticks, to allow followers to sync with ZooKeeper. If followers fall
+# too far behind a leader, they will be dropped.
+syncLimit= {{ zookeeper_sync_timeout_ticks }}
+
+# Should the leader accepts client connections? default "yes".  
+leaderServes= {{ zookeeper_leader_is_also_server }}
+
+# maximum simultaneous connections to allow. 
+maxClientCnxns= {{ zookeeper_max_client_connections }}
+
+# number of writes to trigger a snapshot
+snapCount= {{ zookeeper_snapshot_trigger }}
+
+# the directory where the snapshot is stored.
+dataDir= {{ zookeeper_data_dir }}
+
+# transaction journal directory. Should be a dedicated device.
+dataLogDir= {{ zookeeper_journal_dir }}
+
+# the port at which the clients will connect
+clientPort= {{ zookeeper_client_port }}
+
+cnxTimeout= {{ zookeeper_cnxTimeout }}
+
+#tcp
+electionAlg= 3
+
+

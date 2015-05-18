@@ -1,0 +1,74 @@
+---
+- name: create group
+  group:
+    name={{ zookeeper_group }}
+    system=yes
+
+- name: create user
+  user:
+    name={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+    system=yes
+    createhome=no
+
+- name: create build dir
+  file:
+    state=directory
+    path={{ zookeeper_build_dir }}
+
+- name: check - already downloaded
+  stat: path={{ zookeeper_build_dir }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}
+  register: zookeeper_download
+
+- uri:
+    url="http://www.apache.org/dyn/closer.cgi?path={{ zookeeper_archive_folder }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}&as_json=1"
+    return_content=yes
+  register: mirrors
+
+- set_fact:
+    zookeeper_mirror: "{{ (mirrors.content|from_json).preferred }}"
+
+- name: download zookeeper
+  get_url:
+    url: "{{ zookeeper_mirror }}{{ zookeeper_archive_folder }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}"
+    dest: "{{ zookeeper_build_dir }}"
+    sha256sum: "{{ zookeeper_sha256 }}"
+  when: not zookeeper_download.stat.exists
+
+- name: create install dir
+  file:
+    state=directory
+    path={{ zookeeper_install_dir }}/{{ zookeeper_archive }}
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+    mode=0755
+
+- name: unarchive
+  unarchive:
+    src={{ zookeeper_build_dir }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}
+    dest={{ zookeeper_install_dir }}
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+    copy=no
+    creates={{ zookeeper_install_dir }}/{{ zookeeper_archive }}/bin
+  register: unarchived
+
+#- name: install - setup scripts
+#  template:
+#    src={{ item }}.j2
+#    dest={{ zookeeper_install_dir }}/{{ zookeeper_archive }}/bin/{{ item }}
+#    mode=755
+#    owner={{ zookeeper_user }}
+#    group={{ zookeeper_group }}
+#  with_items:
+#    - zookeeper-run-class.sh
+#    - zookeeper-server-start.sh
+#    - service-control
+
+- name: link to current
+  file:
+    state=link
+    src={{ zookeeper_install_dir }}/{{ zookeeper_archive }}
+    path={{ zookeeper_install_dir }}/current
+
+

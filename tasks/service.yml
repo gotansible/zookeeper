@@ -1,0 +1,15 @@
+---
+
+- name: service - setup and run 
+  runit:
+    name: "{{ zookeeper_service_name }}"
+    enabled: true
+    state: up
+    timeout: 60
+    user: "{{ zookeeper_user }}"
+    command: "{{ zookeeper_install_dir }}/current/bin/zkServer.sh start-foreground {{ zookeeper_config_dir }}/zoo.cfg"
+    env_vars: "{{zookeeper_env_vars}}"
+  register: zookeeper_service_status
+
+
+

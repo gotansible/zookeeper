@@ -1,0 +1,41 @@
+---
+
+- name: config - create config dir
+  file:
+    state=directory
+    path={{ zookeeper_config_dir }}
+    mode=755
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+
+- name: config - create log dir
+  file:
+    state=directory
+    path={{ zookeeper_log_dir }}
+    mode=0755
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+
+- name: config - create data dir
+  file:
+    state=directory
+    path={{ item }}
+    mode=0750
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+  with_items:
+    - "{{ zookeeper_data_dir }}"
+    - "{{ zookeeper_journal_dir }}"
+
+- name: config - install configs
+  template:
+    src={{ item }}.j2
+    dest={{ zookeeper_config_dir }}/{{ item }}
+    owner={{ zookeeper_user }}
+    group={{ zookeeper_group }}
+  with_items:
+    - environment-defaults
+    - zoo.cfg
+    - myid
+    - log4j.properties
+
