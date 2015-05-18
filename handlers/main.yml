@@ -1,0 +1,6 @@
+---
+
+- name: restart zookeeper
+  runit: name={{ zookeeper_service_name }} state=up timeout=9 action=reload
+  when: not zookeeper_service_status.restarted
+

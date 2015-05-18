@@ -1,17 +1,17 @@
 ---
-- name: create group
+- name: install - create group
   group:
     name={{ zookeeper_group }}
     system=yes
 
-- name: create user
+- name: install - create user
   user:
     name={{ zookeeper_user }}
     group={{ zookeeper_group }}
     system=yes
     createhome=no
 
-- name: create build dir
+- name: install - create build dir
   file:
     state=directory
     path={{ zookeeper_build_dir }}
@@ -20,7 +20,8 @@
   stat: path={{ zookeeper_build_dir }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}
   register: zookeeper_download
 
-- uri:
+- name: install - download
+  uri:
     url="http://www.apache.org/dyn/closer.cgi?path={{ zookeeper_archive_folder }}/{{ zookeeper_archive }}{{ zookeeper_archive_ext }}&as_json=1"
     return_content=yes
   register: mirrors
@@ -52,18 +53,6 @@
     copy=no
     creates={{ zookeeper_install_dir }}/{{ zookeeper_archive }}/bin
   register: unarchived
-
-#- name: install - setup scripts
-#  template:
-#    src={{ item }}.j2
-#    dest={{ zookeeper_install_dir }}/{{ zookeeper_archive }}/bin/{{ item }}
-#    mode=755
-#    owner={{ zookeeper_user }}
-#    group={{ zookeeper_group }}
-#  with_items:
-#    - zookeeper-run-class.sh
-#    - zookeeper-server-start.sh
-#    - service-control
 
 - name: link to current
   file:
