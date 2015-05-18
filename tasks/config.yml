@@ -38,4 +38,5 @@
     - zoo.cfg
     - myid
     - log4j.properties
+  notify: restart zookeeper
 
