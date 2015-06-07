@@ -40,8 +40,8 @@ zookeeper_env_vars:
 
 #:: Environment Specific Settings
 # IP:> BrokerId
-zookeeper_nodes:
-  - { addr: "127.0.0.1", id: "1" }
+zookeeper_ips:
+  - "127.0.0.1"
 
 
 #:: Tunables
